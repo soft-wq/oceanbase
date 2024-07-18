@@ -444,25 +444,25 @@ int ObAggregatedStore::fill_row(blocksstable::ObDatumRow &row)
 
 int ObAggregatedStore::fill_count(const int64_t row_count)
 {
-  int ret = OB_SUCCESS;
-  if (IS_NOT_INIT) {
-    ret = OB_NOT_INIT;
-    LOG_WARN("ObAggregatedStore is not inited", K(ret), K(*this));
-  } else if (row_count < 0) {
-    ret = OB_INVALID_ARGUMENT;
-    STORAGE_LOG(WARN, "Invalid argument to fill count", K(ret), K(row_count));
-  } else {
-    // your code here
-    for (int64_t i = 0; OB_SUCC(ret) && i < agg_row_.get_agg_count(); ++i) {
-      ObCountAggCell *cell = (ObCountAggCell *)agg_row_.at(i);
-      if (OB_FAIL(cell->eval(row_buf_.storage_datums_[cell->get_col_offset()], row_count))) {
-        LOG_WARN("Failed to eval agg count cell", K(ret), K(i), K(*cell));
-      }
-    }
-    LOG_DEBUG("debug to fill row count", K(ret), K(row_count));
-  }
-  return ret;
+ int ret = OB_SUCCESS;
+  if (IS_NOT_INIT) {
+ ret = OB_NOT_INIT;
+ LOG_WARN("ObAggregatedStore is not inited", K(ret), K(*this));
+ } else if (row_count < 0) {
+ ret = OB_INVALID_ARGUMENT;
+ STORAGE_LOG(WARN, "Invalid argument to fill count", K(ret), K(row_count));
+ } else {
+ for (int64_t i = 0; OB_SUCC(ret) && i < agg_row_.get_agg_count(); ++i) {
+ ObCountAggCell *cell = (ObCountAggCell *)agg_row_.at(i);
+ if (OB_FAIL(cell->eval(row_buf_.storage_datums_[cell->get_col_offset()], row_count))) {
+ LOG_WARN("Failed to eval agg count cell", K(ret), K(i), K(*cell));
+ }
+ }
+ LOG_DEBUG("debug to fill row count", K(ret), K(row_count));
+ }
+ return ret;
 }
+
 
 int ObAggregatedStore::collect_aggregated_row(blocksstable::ObDatumRow *&row)
 {
